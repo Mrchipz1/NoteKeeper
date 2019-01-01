@@ -3,6 +3,10 @@ package com.example.mayokun.notekeeper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Created by Jim.
+ */
+
 public final class NoteInfo implements Parcelable {
     private CourseInfo mCourse;
     private String mTitle;
@@ -18,7 +22,6 @@ public final class NoteInfo implements Parcelable {
         mCourse = source.readParcelable(CourseInfo.class.getClassLoader());
         mTitle = source.readString();
         mText = source.readString();
-
     }
 
     public CourseInfo getCourse() {
@@ -76,14 +79,13 @@ public final class NoteInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeParcelable(mCourse, 0);
         dest.writeString(mTitle);
         dest.writeString(mText);
-        dest.writeParcelable(mCourse,0);
-
     }
+
     public final static Parcelable.Creator<NoteInfo> CREATOR =
-            new Parcelable.Creator<NoteInfo>(){
+            new Parcelable.Creator<NoteInfo>() {
 
                 @Override
                 public NoteInfo createFromParcel(Parcel source) {

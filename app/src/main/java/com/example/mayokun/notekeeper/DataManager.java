@@ -3,6 +3,9 @@ package com.example.mayokun.notekeeper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by Jim.
+ */
 
 public class DataManager {
     private static DataManager ourInstance = null;
