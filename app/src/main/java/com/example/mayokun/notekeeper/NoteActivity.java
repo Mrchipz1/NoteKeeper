@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -13,6 +14,7 @@ import android.widget.Spinner;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
+    private final String TAG = getClass().getSimpleName();
     public static final String NOTE_POSITION = "com.example.mayokun.notekeeper.NOTE_POSITION";
     public static final String ORIGINAL_NOTE_COURSE_ID = "com.example.mayokun.notekeeper.ORIGINAL_NOTE_COURSE_ID";
     public static final String ORIGINAL_NOTE_TITLE = "com.example.mayokun.notekeeper.ORIGINAL_NOTE_TITLE";
@@ -56,6 +58,7 @@ public class NoteActivity extends AppCompatActivity {
 
         if(!mIsNewNote)
             displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
+        Log.d(TAG,"onCreate");
     }
 
     private void restoreOriginalNoteValues(Bundle savedInstanceState) {
@@ -76,18 +79,23 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(mIsCancelling)
-        if(mIsNewNote){
-        {
-          DataManager.getInstance().removeNote(mNotePosition);
-        }
+        if(mIsCancelling) {
+            Log.i(TAG, "Cancelling note at position: " + mNotePosition);
 
-        }else{
-            storePreviousNoteValues();
+            if (mIsNewNote) {
+                {
+                    DataManager.getInstance().removeNote(mNotePosition);
+                }
+
+            } else {
+                storePreviousNoteValues();
+            }
         }
 
         else {
-        saveNote();}
+        saveNote();
+        }
+        Log.d(TAG,"onPause");
     }
 
     private void storePreviousNoteValues() {
@@ -126,7 +134,7 @@ public class NoteActivity extends AppCompatActivity {
         if(mIsNewNote){
             createNewNote();
             }
-
+            Log.i(TAG, "mNotePosition: "+ mNotePosition);
             mNote = DataManager.getInstance().getNotes().get( mNotePosition);
 
     }
