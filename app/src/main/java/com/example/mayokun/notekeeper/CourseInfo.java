@@ -1,14 +1,10 @@
 package com.example.mayokun.notekeeper;
 
-import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
-/**
- * Created by Jim.
- */
 
 public final class CourseInfo implements Parcelable {
     private final String mCourseId;

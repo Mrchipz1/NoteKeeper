@@ -3,10 +3,6 @@ package com.example.mayokun.notekeeper;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Jim.
- */
-
 public final class ModuleInfo implements Parcelable {
     private final String mModuleId;
     private final String mTitle;
