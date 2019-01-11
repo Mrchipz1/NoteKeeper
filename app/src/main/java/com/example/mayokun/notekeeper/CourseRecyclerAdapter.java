@@ -17,10 +17,10 @@ public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAd
     private final List<CourseInfo> mCourses;
     private final LayoutInflater mLayoutInflater;
 
-    public CourseRecyclerAdapter(Context mContext, List<CourseInfo> mCourses) {
-        this.mContext = mContext;
+    public CourseRecyclerAdapter(Context context, List<CourseInfo> courses) {
+        mContext = context;
         mLayoutInflater = LayoutInflater.from(mContext);
-        this.mCourses = mCourses;
+        mCourses = courses;
     }
 
     @NonNull
@@ -54,7 +54,8 @@ public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Snackbar.make(v,mCourses.get(mCurrentPosition).getTitle(),Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(v,mCourses.get(mCurrentPosition).getTitle(),
+                            Snackbar.LENGTH_LONG).show();
                 }
             });
         }
