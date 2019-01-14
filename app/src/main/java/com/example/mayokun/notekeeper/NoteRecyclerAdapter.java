@@ -25,17 +25,17 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = mLayoutInflater.inflate(R.layout.item_note_list,viewGroup,false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup holder, int position) {
+        View itemView = mLayoutInflater.inflate(R.layout.item_note_list,holder,false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        NoteInfo note = mNotes.get(i);
-        viewHolder.mTextCourse.setText(note.getCourse().getTitle());
-        viewHolder.mTextTitle.setText(note.getTitle());
-        viewHolder.mCurrentPosition = i;
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        NoteInfo note = mNotes.get(position);
+        holder.mTextCourse.setText(note.getCourse().getTitle());
+        holder.mTextTitle.setText(note.getTitle());
+        holder.mId = note.getId();
 
     }
 
@@ -48,7 +48,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
 
         public final TextView mTextCourse;
         public final TextView mTextTitle;
-        public int mCurrentPosition;
+        public int mId;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,7 +58,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext,NoteActivity.class);
-                    intent.putExtra(NoteActivity.NOTE_POSITION,mCurrentPosition);
+                    intent.putExtra(NoteActivity.NOTE_ID, mId);
                     mContext.startActivity(intent);
                 }
             });
