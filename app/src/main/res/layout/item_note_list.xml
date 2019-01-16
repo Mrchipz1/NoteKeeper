@@ -19,7 +19,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/card_vieww"
+                android:id="@+id/text_course"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -40,7 +40,7 @@
                 android:textAppearance="@android:style/TextAppearance.Material.Medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView3"
-                app:layout_constraintTop_toBottomOf="@+id/card_vieww" />
+                app:layout_constraintTop_toBottomOf="@+id/text_course" />
 
             <ImageView
                 android:id="@+id/imageView3"

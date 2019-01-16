@@ -2,6 +2,7 @@ package com.example.mayokun.notekeeper;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.example.mayokun.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         mDbOpenHelper = new NoteKeeperOpenHelper(this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,18 +52,19 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        PreferenceManager.setDefaultValues(this,R.xml.pref_general,false);
-        PreferenceManager.setDefaultValues(this,R.xml.pref_notification,false);
-        PreferenceManager.setDefaultValues(this,R.xml.pref_data_sync,false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PreferenceManager.setDefaultValues(this,  R.xml.pref_notification, false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+        drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         initializeDisplayContent();
     }
 
@@ -72,8 +77,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        mNoteRecyclerAdapter.notifyDataSetChanged();
+        loadNotes();
         updateNavHeader();
+    }
+
+    private void loadNotes() {
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
+        final String[] noteColumns = {
+                NoteInfoEntry.COLUMN_NOTE_TITLE,
+                NoteInfoEntry.COLUMN_COURSE_ID,
+                NoteInfoEntry._ID};
+
+        String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+        final Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME, noteColumns,
+                null, null, null, null, noteOrderBy);
+        mNoteRecyclerAdapter.changeCursor(noteCursor);
     }
 
     private void updateNavHeader() {
@@ -84,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String userName = pref.getString("user_display_name", "");
-        String emailAddress = pref.getString("user_email_address","");
+        String emailAddress = pref.getString("user_email_address", "");
 
         textUserName.setText(userName);
         textEmailAddress.setText(emailAddress);
@@ -92,26 +110,25 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeDisplayContent() {
         DataManager.loadFromDatabase(mDbOpenHelper);
-
         mRecyclerItems = (RecyclerView) findViewById(R.id.list_items);
         mNotesLayoutManager = new LinearLayoutManager(this);
         mCoursesLayoutManager = new GridLayoutManager(this,
                 getResources().getInteger(R.integer.course_grid_span));
 
 
-        List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this,notes);
+        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, null);
 
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
-        mCourseRecyclerAdapter = new CourseRecyclerAdapter(this,courses);
+        mCourseRecyclerAdapter = new CourseRecyclerAdapter(this, courses);
+
         displayNotes();
     }
 
     private void displayNotes() {
-        mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
-        selectNavigationMenuItem(R.id.nav_notes);
+        mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
 
+        selectNavigationMenuItem(R.id.nav_notes);
     }
 
     private void selectNavigationMenuItem(int id) {
@@ -120,11 +137,12 @@ public class MainActivity extends AppCompatActivity
         menu.findItem(id).setChecked(true);
     }
 
-    private void displayCourses(){
-        mRecyclerItems.setAdapter(mCourseRecyclerAdapter);
+    private void displayCourses() {
         mRecyclerItems.setLayoutManager(mCoursesLayoutManager);
+        mRecyclerItems.setAdapter(mCourseRecyclerAdapter);
+
         selectNavigationMenuItem(R.id.nav_courses);
-}
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -151,8 +169,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -166,17 +183,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_notes) {
-         displayNotes();
+            displayNotes();
         } else if (id == R.id.nav_courses) {
-           displayCourses();
-
-        }  else if (id == R.id.nav_share) {
+            displayCourses();
+        } else if (id == R.id.nav_share) {
 //            handleSelection(R.string.nav_share_message);
             handleShare();
-
         } else if (id == R.id.nav_send) {
             handleSelection(R.string.nav_send_message);
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -186,13 +200,13 @@ public class MainActivity extends AppCompatActivity
 
     private void handleShare() {
         View view = findViewById(R.id.list_items);
-        Snackbar.make(view,"Share to " +
-        PreferenceManager.getDefaultSharedPreferences(this).getString("user_favorite_social",""),
+        Snackbar.make(view, "Share to - " +
+                        PreferenceManager.getDefaultSharedPreferences(this).getString("user_favorite_social", ""),
                 Snackbar.LENGTH_LONG).show();
     }
 
     private void handleSelection(int message_id) {
         View view = findViewById(R.id.list_items);
-        Snackbar.make(view,message_id, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(view, message_id, Snackbar.LENGTH_LONG).show();
     }
 }

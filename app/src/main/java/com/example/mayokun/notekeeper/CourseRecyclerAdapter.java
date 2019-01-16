@@ -25,16 +25,16 @@ public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAd
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = mLayoutInflater.inflate(R.layout.item_course_list,viewGroup,false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = mLayoutInflater.inflate(R.layout.item_course_list,parent,false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        CourseInfo course = mCourses.get(i);
-        viewHolder.mTextCourse.setText(course.getTitle());
-        viewHolder.mCurrentPosition = i;
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        CourseInfo course = mCourses.get(position);
+        holder.mTextCourse.setText(course.getTitle());
+        holder.mCurrentPosition = position;
 
     }
 
